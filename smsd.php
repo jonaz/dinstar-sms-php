@@ -1,5 +1,6 @@
 <?php
 require_once('settings.php');
+declare(ticks = 1);
 class dinstarsms {
     public $state = array();
     public $prevstate = array();
@@ -12,6 +13,7 @@ class dinstarsms {
          switch ($signo) {
              case SIGTERM:
                  // handle shutdown tasks
+                 $this->run = false;
                  socket_close($this->client);
                  socket_close($this->tcp_socket);
                  exit;
@@ -153,7 +155,7 @@ class dinstarsms {
         $headers .= "Reply-To: $from@sms.jonaz.net\r\n";
         $headers .= "X-Mailer: PHP/".phpversion()."\r\n";
         $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
-        mail(config::mailto,'New sms from '.$from,$text,$headers);
+        mail(settings::mailto,'New sms from '.$from,$text,$headers);
     }
 
     function __construct(){
@@ -175,7 +177,7 @@ class dinstarsms {
             echo "client connected\n";
             $buff = '';
             $start = time();
-            while(true){
+            while($this->run === true){
 
 
                 if($start < time()-45){
