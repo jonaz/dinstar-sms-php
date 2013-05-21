@@ -29,6 +29,9 @@ class dinstarsms {
          }
 
     }
+    function logg($text){
+        echo date("Y-m-d H:i:s")." : ".$text."\n";
+    }
     function parse( $pkt ) {
         $header = array(
             'len' => unpack('N',substr($pkt,0,4)),
@@ -69,7 +72,7 @@ class dinstarsms {
                     $body['content'] = utf8_encode($body['content']);
                     $body['content'] = str_replace("\0", "", $body['content']);
                 }
-                echo "new SMS from: ".$body['number']." content:".$body['content']." \n";
+                $this->logg("new SMS from: ".$body['number']." content:".$body['content']);
                 if($this->debug)
                     print_r($body);
                 $this->email($body['number'],$body['content']);
@@ -171,10 +174,10 @@ class dinstarsms {
 
         //socket_set_nonblock($this->tcp_socket);
         while( $this->run === true ) {
-            echo "waiting for client to connect\n";
+            $this->logg("waiting for client to connect");
             $this->client = socket_accept($this->tcp_socket);  
             socket_set_nonblock($this->client);
-            echo "client connected\n";
+            $this->logg( "client connected");
             $buff = '';
             $start = time();
             while($this->run === true){
@@ -191,9 +194,8 @@ class dinstarsms {
                         'flag' => 0,
                     );  
                     if(!$this->send($header,0,'')){
-                        echo "sendbreak\n";
+                        $this->logg( "sendbreak");
                         break;
-
                     }
                     $start = time();
                 }
@@ -222,7 +224,7 @@ class dinstarsms {
                             print_r( "IN ".$this->hex2ascii($pkt)."\n");
                         }
                         if(!$this->parse($pkt)){
-                            echo "parsebreak\n";
+                            $this->logg("parsebreak");
                             break 2;
                         }
                     } else {
