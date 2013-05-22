@@ -116,25 +116,6 @@ class dinstarsms {
     }
 
     function send($header,$type,$body) {
-        /*
-    Nov 17 07:36:29 dinstar.lan syslog: [216-07:36:28:730]00000002001FD6C706A10000429530DC00000405000700000100#015
-    Nov 17 07:36:29 dinstar.lan syslog: [218-07:36:28:780]01000000001FD6C706A10000429530DC000004050800000000#015
-    IN 00 00 00 02 00 1f d6 c7 06 a1 00 00 42 95 30 e7 00 00 04 3a 00 07 00 00 01 00 |
-    UT 00 00 00 01 00 1f d6 c7 06 a1 00 00 42 95 30 e7 00 00 04 3a 00 08 00 00 00
-    Nov 17 07:30:57 dinstar.lan syslog: [245-07:30:57:230]send received sms#015#012#015
-    Nov 17 07:30:57 dinstar.lan syslog: [246-07:30:57:230]wia api:send data:#015
-    Nov 17 07:30:57 dinstar.lan syslog: [247-07:30:57:230]00000002001FD6C706A1000042952EA1000001C2000700000100#015
-    Nov 17 07:30:57 dinstar.lan syslog: [248-07:30:57:230]wia api:send data:#015
-    Nov 17 07:30:57 dinstar.lan syslog: [249-07:30:57:230]00000035001FD6C706A1000042952EA1000001C30005000034363733333132313537380000000
-    Nov 17 07:30:57 dinstar.lan syslog: [250-07:30:57:230]00010000085265737572736572#015
-    Nov 17 07:30:57 dinstar.lan syslog: [251-07:30:57:280]wia api:recv data:#015
-    Nov 17 07:30:57 dinstar.lan syslog: [252-07:30:57:280]01000000001FD6C706A1000042952EA1000001C20800000000#015
-    Nov 17 07:30:58 dinstar.lan syslog: [253-07:30:57:480]wia api:recv data:#015
-    Nov 17 07:30:58 dinstar.lan syslog: [254-07:30:57:480]01000000001FD6C706A1000042952EA1000001C30600000000#015
-    Nov 17 07:30:58 dinstar.lan syslog: [255-07:30:57:480]delete recv msg, id=0#015
-    Nov 17 07:31:00 dinstar.lan syslog: [000-07:30:59:330]peer close the socket#015#012#015
-    Nov 17 07:31:00 dinstar.lan syslog: [001-07:30:59:330]read failed, close the socket#015#012#015
-    */
         $pkt = pack('N',strlen($body));
         $pkt .= pack('H*',$header['id']['mac'])."\x00\x00";
         $pkt .= pack('N',$header['id']['time']);
@@ -144,7 +125,7 @@ class dinstarsms {
         $pkt .= $body;
 
         if($this->debug)
-            print_r("UT ". $this->hex2ascii($pkt)."\n");
+            print_r("OUT ". $this->hex2ascii($pkt)."\n");
 
         if ( !$bytes = socket_write($this->client,$pkt) )
             return false;
@@ -234,7 +215,7 @@ class dinstarsms {
                 }
                usleep(100000);
             }
-            echo "client disconnected\n";
+            $this->logg("client disconnected");
             socket_close($this->client);
         }
 
